@@ -6,8 +6,10 @@ import java.util.UUID
 @Entity
 @Table(name = "commodities")
 class Commodity(
+    
     @Id
-    val id: UUID = UUID.randomUUID(),
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var name: String

@@ -1,6 +1,7 @@
 package com.springframework.kotlin.controller
 
 import com.springframework.kotlin.dto.CommodityDto
+import com.springframework.kotlin.request.CommodityRequest
 import com.springframework.kotlin.facade.CommodityFacade
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -8,29 +9,29 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/commodities")
 class CommodityController(private val commodityFacade: CommodityFacade) {
 
-    @GetMapping
+    companion object {
+        const val BASE_URL = "/api/v1/commodities"
+        const val BASE_URL_ID = "$BASE_URL/{id}"
+    }
+
+    @GetMapping(BASE_URL)
     fun getAll(): List<CommodityDto> = commodityFacade.getAll()
 
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: UUID): ResponseEntity<CommodityDto> {
-        val commodity = commodityFacade.getById(id)
-        return if (commodity != null) ResponseEntity.ok(commodity) else ResponseEntity.notFound().build()
-    }
+    @GetMapping(BASE_URL_ID)
+    fun getById(@PathVariable id: UUID): ResponseEntity<CommodityDto> =
+        commodityFacade.getById(id)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
 
-    @PostMapping
+    @PostMapping(BASE_URL)
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody commodityDto: CommodityDto): CommodityDto = commodityFacade.create(commodityDto)
+    fun create(@RequestBody commodityRequest: CommodityRequest): CommodityDto = commodityFacade.create(commodityRequest)
 
-    @PutMapping("/{id}")
-    fun update(@PathVariable id: UUID, @RequestBody commodityDto: CommodityDto): ResponseEntity<CommodityDto> {
-        val updated = commodityFacade.update(id, commodityDto)
-        return if (updated != null) ResponseEntity.ok(updated) else ResponseEntity.notFound().build()
-    }
+    @PutMapping(BASE_URL_ID)
+    fun update(@PathVariable id: UUID, @RequestBody commodityRequest: CommodityRequest): ResponseEntity<CommodityDto> =
+        commodityFacade.update(id, commodityRequest)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(BASE_URL_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(@PathVariable id: UUID) = commodityFacade.delete(id)
 }

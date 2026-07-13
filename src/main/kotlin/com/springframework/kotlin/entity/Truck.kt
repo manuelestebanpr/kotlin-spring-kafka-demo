@@ -7,7 +7,8 @@ import java.util.UUID
 @Table(name = "trucks")
 class Truck(
     @Id
-    val id: UUID = UUID.randomUUID(),
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var longitude: Double,
@@ -26,14 +27,4 @@ class Truck(
     )
     var commodities: MutableSet<Commodity> = mutableSetOf()
 
-    // Second constructor as requested: "when updating the Truck with the commodities we use a second constructor that adds this with kotlin"
-    constructor(
-        id: UUID = UUID.randomUUID(),
-        longitude: Double,
-        latitude: Double,
-        numberOfPassengers: Int,
-        commodities: MutableSet<Commodity>
-    ) : this(id, longitude, latitude, numberOfPassengers) {
-        this.commodities = commodities
-    }
 }
